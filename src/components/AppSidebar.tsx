@@ -1,61 +1,60 @@
-import React, { useState } from "react";
-import { 
-  Cloud, 
-  LayoutGrid, 
-  Folder, 
-  Users, 
-  History, 
-  Star, 
-  Archive, 
-  Book 
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  Cloud,
+  LayoutGrid,
+  Folder,
+  Users,
+  History,
+  Star,
+  Archive,
 } from "lucide-react";
 
-const AppSidebar = () => {
-  const [activeItem, setActiveItem] = useState("Dashboard");
+const menuItems = [
+  { name: "Dashboard", icon: LayoutGrid, path: "/" },
+  { name: "Files", icon: Folder, path: "/files" },
+  { name: "Team", icon: Users, path: "/team" },
+  { name: "Recent", icon: History, path: "/recent" },
+  { name: "Favorites", icon: Star, path: "/favorites" },
+  { name: "Archive", icon: Archive, path: "/archive" },
+];
 
-  const menuItems = [
-    { name: "Dashboard", icon: LayoutGrid },
-    { name: "Files", icon: Folder },
-    { name: "Team", icon: Users },
-    { name: "Recent", icon: History },
-    { name: "Favorites", icon: Star },
-    { name: "Archive", icon: Archive },
-  ];
+export default function AppSidebar() {
+  const pathname = usePathname();
 
   return (
-    <aside className="bg-white h-screen border-r border-gray-100 flex flex-col items-center py-8 w-24">
-      {/* --- Logo Section --- */}
-      <div className="mb-8">
-        <Cloud size={32} className="text-blue-500" strokeWidth={2.5} />
+    <aside className="h-screen w-24 bg-white border-r border-zinc-100 flex flex-col items-center py-8">
+      <div className="mb-10">
+        <div className="bg-blue-50 p-2.5 rounded-2xl">
+          <Cloud size={22} className="text-blue-500" />
+        </div>
       </div>
 
-      {/* --- Navigation Items --- */}
-      <ul className="flex flex-col space-y-6 w-full items-center px-2">
+      <ul className="flex flex-col gap-4 items-center w-full">
         {menuItems.map((item) => {
-          const isActive = activeItem === item.name;
+          const isActive = pathname === item.path;
           return (
-            <li
-              key={item.name}
-              onClick={() => setActiveItem(item.name)}
-              className={`
-                cursor-pointer transition-all duration-200 flex items-center justify-center
-                ${isActive
-                  ? "bg-blue-500 text-white shadow-lg shadow-blue-200 rounded-2xl p-3.5"
-                  : "text-gray-400 hover:text-blue-500 p-2"
-                }
-              `}
-            >
-              <item.icon
-                size={24}
-                strokeWidth={2}
-                className={`transition-transform duration-200 ${!isActive && "hover:scale-110"}`}
-              />
+            <li key={item.name}>
+              <Link
+                href={item.path}
+                className={`group flex items-center justify-center rounded-2xl transition-all
+                  ${
+                    isActive
+                      ? "bg-blue-500 text-white p-3 shadow-sm shadow-blue-200/60"
+                      : "text-zinc-400 hover:text-blue-500 hover:bg-blue-50 p-2.5"
+                  }`}
+              >
+                <item.icon
+                  size={20}
+                  className="transition-transform group-hover:scale-110"
+                />
+              </Link>
             </li>
           );
         })}
       </ul>
     </aside>
   );
-};
-
-export default AppSidebar;
+}

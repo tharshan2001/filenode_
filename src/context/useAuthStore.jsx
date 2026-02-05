@@ -2,9 +2,9 @@
 import { create } from "zustand";
 
 export const useAuthStore = create((set) => ({
-  user: null,          // logged-in user info
-  loading: false,      // request state
-  error: null,         // error message
+  user: null,
+  loading: false,
+  error: null,
 
   // REGISTER
   register: async (data) => {
@@ -13,9 +13,13 @@ export const useAuthStore = create((set) => ({
       const res = await fetch("http://localhost:8090/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include", // send cookies/session
         body: JSON.stringify(data),
       });
-      if (!res.ok) throw new Error("Registration failed");
+      if (!res.ok) {
+        const errMsg = await res.text();
+        throw new Error(errMsg || "Registration failed");
+      }
       const user = await res.json();
       set({ user, loading: false });
       return user;
@@ -32,9 +36,13 @@ export const useAuthStore = create((set) => ({
       const res = await fetch("http://localhost:8090/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(data),
       });
-      if (!res.ok) throw new Error("Login failed");
+      if (!res.ok) {
+        const errMsg = await res.text();
+        throw new Error(errMsg || "Login failed");
+      }
       const user = await res.json();
       set({ user, loading: false });
       return user;
@@ -49,9 +57,14 @@ export const useAuthStore = create((set) => ({
     set({ loading: true, error: null });
     try {
       const res = await fetch("http://localhost:8090/auth/me", {
-        credentials: "include", // if your backend uses cookies
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
       });
-      if (!res.ok) throw new Error("Failed to fetch user");
+      if (!res.ok) {
+        const errMsg = await res.text();
+        throw new Error(errMsg || "Failed to fetch user");
+      }
       const user = await res.json();
       set({ user, loading: false });
       return user;
@@ -67,9 +80,13 @@ export const useAuthStore = create((set) => ({
     try {
       const res = await fetch("http://localhost:8090/auth/logout", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         credentials: "include",
       });
-      if (!res.ok) throw new Error("Logout failed");
+      if (!res.ok) {
+        const errMsg = await res.text();
+        throw new Error(errMsg || "Logout failed");
+      }
       set({ user: null, loading: false });
     } catch (err) {
       set({ error: err.message, loading: false });

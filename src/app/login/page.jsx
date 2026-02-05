@@ -14,7 +14,7 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const user = await login({ identifier: email, password });
-    if (user) router.push("/dashboard");
+    if (user) router.push("/");
     else setError("Invalid credentials");
   };
 
